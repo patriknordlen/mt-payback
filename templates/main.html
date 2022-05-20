@@ -1,0 +1,78 @@
+<html>
+  <head>
+    <title>Payback time!</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
+  <body onload="loadDepartures()">
+    <form action="/api/submit" method="POST" autocomplete="off">
+      <table>
+        <tr>
+          <th colspan="2">Ticket details</th>
+        </tr>
+        <tr>
+          <th>Number</th>
+          <td><input type="text" id="ticket" name="ticket" value="{{ ticket }}"/></td>
+        </tr>
+        <tr>
+          <th>Expiry date</th>
+          <td><input type="date" id="expirydate" name="expirydate" value="{{ expirydate }}"/></td>
+        </tr>
+        <tr>
+          <th>Holder</th>
+          <td>
+            <select name="ticketholder">
+              {% for person in persons %}
+              <option value="{{ person }}"{% if person == ticketholder %} selected{% endif %}>{{ person }}</option>
+              {% endfor %}
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <th colspan="2" style="padding-top:100px">Trip details</th>
+        </tr>
+        <tr>
+          <th>From</th>
+          <td>
+            <select id="departureLocation" name="from" onchange="loadDepartures()">
+              <option value="U">Uppsala</option>
+              <option value="Cst">Stockholm</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <th>Date</th>
+          <td>
+            <input id="departureDate" type="date" value="{{ today }}" onchange="loadDepartures()"/>
+          </td>
+        </tr>
+        <tr>
+          <th>Departure</th>
+          <td>
+            <select id="departures" name="departure"></select>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" style="text-align:center;padding-top:50px;"><input halign="middle" type="submit" value="Submit"/></td>
+        </tr>
+      </table>
+    </form>
+  </body>
+  <script>
+    function loadDepartures() {
+      $.get({
+        url: `/api/departures/${$('#departureLocation').val()}/${$('#departureDate').val()}`,
+        dataType: "json",
+        success: (response) => {
+          $.each(response.data, (i, val) => {
+            $('#departures').append($('<option>', {
+                value: new Date(val).toISOString(),
+                text: val.split("T")[1]
+              }))
+          })
+          $('#departures').val($('#departures option:last').val())
+        },
+        error: (e) => console.log(e)
+      })
+    }
+  </script>
+</html>

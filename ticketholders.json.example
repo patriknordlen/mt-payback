@@ -1,0 +1,28 @@
+{
+  "<Name to show in app>": {
+    "id": "00000000-0000-0000-0000-000000000000",
+    "firstName": "<First name>",
+    "surName": "<Last name>",
+    "city": "",
+    "postalCode": "",
+    "streetNameAndNumber": "",
+    "identityNumber": "<Swedish SSN, YYYYMMDD-NNNN format>",
+    "bankAccountNumber": "",
+    "mobileNumber": "<Phone number>",
+    "email": "<Email address>",
+    "clearingNumber": ""
+  },
+  "<Another name to show in app>": {
+    "id": "00000000-0000-0000-0000-000000000000",
+    "firstName": "<First name>",
+    "surName": "<Last name>",
+    "city": "",
+    "postalCode": "",
+    "streetNameAndNumber": "",
+    "identityNumber": "<Swedish SSN, YYYYMMDD-NNNN format>",
+    "bankAccountNumber": "",
+    "mobileNumber": "<Phone number>",
+    "email": "<Email address>",
+    "clearingNumber": ""
+  }
+}

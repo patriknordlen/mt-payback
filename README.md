@@ -15,4 +15,6 @@ When you enter a new ticket, it will be stored and used as the default choice fo
 
 # Limitations
 
-The app is kind of hard-coded for trips between and Uppsala, Stockholm, i.e. these are the only two stations included and when you specify one as your departure station the other will be assumed to be your destination. You could change to others, the full list of stations along with their names and codes are available here: https://evf-regionsormland.preciocloudapp.net/api/TrainStations
+The departure list is for all departures from the selected departure station on the given day, not just the ones to the selected arrival station. This is because the API unfortunately doesn't provide any way to filter the departures.
+
+The list of departure and arrival stations is hardcoded in the app. It would be easy enough to include them all, but then it would take a longer time to choose departure and arrival stations. You could change to others as you see fit. The full list of stations along with their names and codes are available here: https://evf-regionsormland.preciocloudapp.net/api/TrainStations

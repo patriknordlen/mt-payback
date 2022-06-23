@@ -36,7 +36,16 @@
             <select id="departureLocation" name="from" onchange="loadDepartures()">
               <option value="U">Uppsala</option>
               <option value="Cst">Stockholm</option>
+              <option value="Srv">Storvreta</option>
             </select>
+          </td>
+        </tr>
+        <tr>
+          <th>To</th>
+          <td>
+            <select id="arrivalLocation" name="to">
+              <option value="Cst">Stockholm</option>
+              <option value="Srv">Storvreta</option>
           </td>
         </tr>
         <tr>
@@ -58,6 +67,24 @@
     </form>
   </body>
   <script>
+    $('#departureLocation').on('change', (event) => {
+      const departureStation = event.target.value
+
+      $.get({
+        url: `/api/arrival_stations/${departureStation}`,
+        success: (response) => {
+          $('#arrivalLocation').empty()
+          $.each(response.stations, (i, val) => {
+            $('#arrivalLocation').append($('<option>', {
+              value: val.name,
+              text: val.longname
+            }))
+          })
+
+        }
+      })
+    })
+
     function loadDepartures() {
       $.get({
         url: `/api/departures/${$('#departureLocation').val()}/${$('#departureDate').val()}`,

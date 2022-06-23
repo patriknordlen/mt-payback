@@ -9,6 +9,12 @@ import json
 app = Flask(__name__)
 store = jsonstore.JsonStore("mt-payback.json")
 
+stations = {
+    "U": {"name": "Uppsala", "id": "cf09cbb1-fd82-4b83-9c09-87bc8fc2f018"},
+    "Cst": {"name": "Stockholm", "id": "f4d25596-a9f9-41a1-b200-713439d92fc4"},
+    "Srv": {"name": "Storvreta", "id": "ddf64ca1-b3b3-4820-94fb-137f17fbefc3"},
+}
+
 
 @app.route("/", methods=["GET"])
 def index():
@@ -33,6 +39,7 @@ def submit():
         json=create_request_body(
             request.form.get("ticket"),
             request.form.get("from"),
+            request.form.get("to"),
             request.form.get("departure"),
             request.form.get("ticketholder"),
         ),
@@ -56,13 +63,16 @@ def get_departures(station, date):
     return r.text
 
 
-def get_station_ids(station):
-    stations = {
-        "U": "cf09cbb1-fd82-4b83-9c09-87bc8fc2f018",
-        "Cst": "f4d25596-a9f9-41a1-b200-713439d92fc4",
-    }
+@app.route("/api/arrival_stations/<station>", methods=["GET"])
+def get_arrival_stations(station):
+    arrival_stations = {"U": ["Cst", "Srv"], "Cst": ["U"], "Srv": ["U"]}
 
-    return stations.pop(station), list(stations.values())[0]
+    return {
+        "stations": [
+            {"name": x, "longname": stations[x]["name"]}
+            for x in arrival_stations[station]
+        ]
+    }
 
 
 def get_customer_details(name):
@@ -72,15 +82,14 @@ def get_customer_details(name):
     return customers[name]
 
 
-def create_request_body(ticket, station, departure, name):
-    dep_station, arr_station = get_station_ids(station)
+def create_request_body(ticket, dep_station, arr_station, departure, name):
     return {
         "id": "00000000-0000-0000-0000-000000000000",
         "customer": get_customer_details(name),
         "ticketNumber": ticket,
         "ticketType": 1,
-        "departureStationId": dep_station,
-        "arrivalStationId": arr_station,
+        "departureStationId": stations[dep_station]["id"],
+        "arrivalStationId": stations[arr_station]["id"],
         "departureDate": departure,
         "comment": "",
         "status": 0,

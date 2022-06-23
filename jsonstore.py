@@ -27,9 +27,9 @@ class JsonStore:
     def set_all(self, input_dict):
         with open(self.filename, "r") as f:
             store = json.load(f)
-            updated_store = store | input_dict
+            store.update(input_dict)
         with open(self.filename, "w") as f:
-            json.dump(updated_store, f)
+            json.dump(store, f)
 
     @locked("jsonstore.lock")
     def unset(self, key):

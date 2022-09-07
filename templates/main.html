@@ -87,14 +87,14 @@
         beforeSend: () => $('#result')
           .attr("style", "color:green")
           .attr("aria-busy", "true")
-          .html(""),
+          .text(""),
         success: (data) => $('#result')
           .attr("aria-busy", "false")
-          .html(data),
+          .text(data),
         error: () => $('#result')
           .attr("aria-busy", "false")
           .attr("style", "color:red")
-          .html("Request failed")
+          .text("Request failed")
       })
 
       e.preventDefault()

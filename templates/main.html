@@ -6,73 +6,99 @@
   </head>
   <body>
     <main class="container" style="width:40%">
-      <form action="/api/submit" method="POST" autocomplete="off">
-        <section id="ticket">
-          <h2>Ticket details</h2>
-          <table>
-            <tr>
-              <th>Number</th>
-              <td><input type="text" id="ticket" name="ticket" value="{{ ticket }}"/></td>
-            </tr>
-            <tr>
-              <th>Expiry date</th>
-              <td><input type="date" id="expirydate" name="expirydate" value="{{ expirydate }}"/></td>
-            </tr>
-            <tr>
-              <th>Holder</th>
-              <td>
-                <select name="ticketholder">
-                  {% for person in persons %}
-                  <option value="{{ person }}"{% if person == ticketholder %} selected{% endif %}>{{ person }}</option>
-                  {% endfor %}
-                </select>
-              </td>
-            </tr>
-          </table>
-        </section>
-        <section id="trip">
-          <h2>Trip details</h2>
-          <table>
-            <tr>
-              <th>From</th>
-              <td>
-                <select id="departureLocation" name="from" onchange="loadDepartures()">
-                  <option value="U">Uppsala</option>
-                  <option value="Cst">Stockholm</option>
-                  <option value="Srv">Storvreta</option>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <th>To</th>
-              <td>
-                <select id="arrivalLocation" name="to">
-                  <option value="Cst">Stockholm</option>
-                  <option value="Srv">Storvreta</option>
-              </td>
-            </tr>
-            <tr>
-              <th>Date</th>
-              <td>
-                <input id="departureDate" type="date" value="{{ today }}" onchange="loadDepartures()"/>
-              </td>
-            </tr>
-            <tr>
-              <th>Departure</th>
-              <td>
-                <select id="departures" name="departure"></select>
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2"><input type="submit" value="Submit"/></td>
-            </tr>
-          </table>
-        </section>
+      <form id="paybackform" autocomplete="off" style="background-color:white;">
+        <details>
+          <summary>Ticket details</summary>
+          <section id="ticket">
+            <table>
+              <tr>
+                <th>Number</th>
+                <td><input type="text" id="ticket" name="ticket" value="{{ ticket }}"/></td>
+              </tr>
+              <tr>
+                <th>Expiry date</th>
+                <td><input type="date" id="expirydate" name="expirydate" value="{{ expirydate }}"/></td>
+              </tr>
+              <tr>
+                <th>Holder</th>
+                <td>
+                  <select name="ticketholder">
+                    {% for person in persons %}
+                    <option value="{{ person }}"{% if person == ticketholder %} selected{% endif %}>{{ person }}</option>
+                    {% endfor %}
+                  </select>
+                </td>
+              </tr>
+            </table>
+          </section>
+        </details>
+        <details open>
+          <summary>Trip details</summary>
+          <section id="trip">
+            <table>
+              <tr>
+                <th>From</th>
+                <td colspan="2">
+                  <select id="departureLocation" name="from" onchange="loadDepartures()">
+                    <option value="U">Uppsala</option>
+                    <option value="Cst">Stockholm</option>
+                    <option value="Srv">Storvreta</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <th>To</th>
+                <td colspan="2">
+                  <select id="arrivalLocation" name="to">
+                    <option value="Cst">Stockholm</option>
+                    <option value="Srv">Storvreta</option>
+                </td>
+              </tr>
+              <tr>
+                <th>Departure</th>
+                <td>
+                  <input id="departureDate" type="date" value="{{ today }}" onchange="loadDepartures()"/>
+                </td>
+                <td>
+                  <select id="departures" name="departure"></select>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3"><input type="submit" value="Submit"/></td>
+              </tr>
+            </table>
+            <div class="grid" style="text-align:center;">
+              <div id="result"></div>
+            </div>
+          </section>
+        </details>
       </form>
     </main>
   </body>
   <script>
     $(document).ready(loadDepartures)
+
+    $('#paybackform').submit(function(e) {
+      const data = $(this).serialize()
+
+      $.post({
+        url: "/api/submit",
+        data: data,
+        beforeSend: () => $('#result')
+          .attr("style", "color:green")
+          .attr("aria-busy", "true")
+          .html(""),
+        success: (data) => $('#result')
+          .attr("aria-busy", "false")
+          .html(data),
+        error: () => $('#result')
+          .attr("aria-busy", "false")
+          .attr("style", "color:red")
+          .html("Request failed")
+      })
+
+      e.preventDefault()
+    })
 
     $('#departureLocation').on('change', (event) => {
       const departureStation = event.target.value

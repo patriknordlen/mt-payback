@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, make_response
 import datetime
 import requests
-import jsonstore
 import json
 
 app = Flask(__name__)
-store = jsonstore.JsonStore("mt-payback.json")
 
 stations = {
     "U": {"name": "Uppsala", "id": "cf09cbb1-fd82-4b83-9c09-87bc8fc2f018"},
@@ -18,22 +16,23 @@ stations = {
 
 @app.route("/", methods=["GET"])
 def index():
-    if (
-        store.get("expirydate") == None
-        or datetime.datetime.strptime(store.get("expirydate"), "%Y-%m-%d").date()
-        < datetime.date.today()
-    ):
-        store.unset("expirydate")
-        store.unset("ticketholder")
-        store.unset("ticket")
+    resp = make_response(
+        render_template("main.html", today=datetime.date.today(), persons=get_customers().keys(), **request.cookies)
+    )
 
-    return render_template("main.html", today=datetime.date.today(), **store.get_all())
+    if (
+        request.cookies.get("expirydate") == None
+        or datetime.datetime.strptime(request.cookies.get("expirydate"), "%Y-%m-%d").date() < datetime.date.today()
+    ):
+        resp.delete_cookie("expirydate")
+        resp.delete_cookie("ticketholder")
+        resp.delete_cookie("ticket")
+
+    return resp
 
 
 @app.route("/api/submit", methods=["POST"])
 def submit():
-    store.set_all(request.form.to_dict())
-
     r = requests.post(
         "https://evf-regionsormland.preciocloudapp.net/api/Claims",
         json=create_request_body(
@@ -42,12 +41,16 @@ def submit():
             request.form.get("to"),
             request.form.get("departure"),
             request.form.get("ticketholder"),
-        ),
-        verify=False,
+        )
     )
 
     if r:
-        return "Request submitted!"
+        resp = make_response("Request submitted!")
+        resp.set_cookie("ticketholder", request.form.get("ticketholder"))
+        resp.set_cookie("expirydate", request.form.get("expirydate"))
+        resp.set_cookie("ticket", request.form.get("ticket"))
+
+        return resp
     else:
         return f"Something went wrong submitting the request: {r.text}"
 
@@ -56,8 +59,7 @@ def submit():
 def get_departures(station, date):
     r = requests.get(
         "https://evf-regionsormland.preciocloudapp.net/api/TrainStations/GetDepartureTimeList",
-        params={"stationId": station, "departureDate": date},
-        verify=False,
+        params={"stationId": station, "departureDate": date}
     )
 
     return r.text
@@ -67,19 +69,18 @@ def get_departures(station, date):
 def get_arrival_stations(station):
     arrival_stations = {"U": ["Cst", "Srv"], "Cst": ["U"], "Srv": ["U"]}
 
-    return {
-        "stations": [
-            {"name": x, "longname": stations[x]["name"]}
-            for x in arrival_stations[station]
-        ]
-    }
+    return {"stations": [{"name": x, "longname": stations[x]["name"]} for x in arrival_stations[station]]}
 
 
-def get_customer_details(name):
+def get_customers():
     with open("ticketholders.json") as f:
         customers = json.load(f)
 
-    return customers[name]
+    return customers
+
+
+def get_customer_details(name):
+    return get_customers()[name]
 
 
 def create_request_body(ticket, dep_station, arr_station, departure, name):

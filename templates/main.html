@@ -2,31 +2,62 @@
   <head>
     <title>Payback time!</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
   </head>
   <body>
     <main class="container" style="width:40%">
-      <form id="paybackform" autocomplete="off" style="background-color:white;">
+      <dialog id="ticketholderdialog">
+        <article>
+          <header>
+            <a href="#" id="closemodal" class="close"></a>
+            <p id="ticketholdertitle">Add ticket holder</p>
+          </header>
+          <form id="ticketholderform">
+            <input type="hidden" id="holderdialogmode" name="holderdialogmode" value="save"/>
+            <input type="hidden" id="holderid" name="holderid" value="1"/>
+            <div class="grid">
+              <label for="firstname">
+                First name
+                <input type="text" id="firstname" name="firstname"/>
+              </label>
+              <label for="lastname">
+                Last name
+                <input type="text" id="lastname" name="lastname"/>
+              </label>
+            </div>
+            <label for="ssn">Social security number (12 digits)</label>
+            <input type="text" id="ssn" name="ssn" placeholder="YYYYMMDD-NNNN"/>
+            <label for="ssn">Telephone number</label>
+            <input type="text" id="telno" name="telno"/>
+            <label for="email">Email address</label>
+            <input type="text" id="email" name="email"/>
+            <button type="submit" id="submitholder">Add</a>
+          </form>
+        </article>
+      </dialog>
+      <form id="paybackform" autocomplete="off">
         <details>
           <summary>Ticket details</summary>
           <section id="ticket">
             <table>
               <tr>
-                <th>Number</th>
-                <td><input type="text" id="ticket" name="ticket" value="{{ ticket }}"/></td>
+                <td colspan="3"><label for="ticket">Number</label><input type="text" id="ticket" name="ticket" value="{{ ticket }}"/></td>
               </tr>
               <tr>
-                <th>Expiry date</th>
-                <td><input type="date" id="expirydate" name="expirydate" value="{{ expirydate }}"/></td>
+                <td colspan="3"><label for="expirydate">Expiry date</label><input type="date" id="expirydate" name="expirydate" value="{{ expirydate }}"/></td>
               </tr>
               <tr>
-                <th>Holder</th>
                 <td>
-                  <select name="ticketholder">
-                    {% for person in persons %}
-                    <option value="{{ person }}"{% if person == ticketholder %} selected{% endif %}>{{ person }}</option>
-                    {% endfor %}
-                  </select>
+                  <label for="ticketholder">Holder</label>
+                  <select id="ticketholder"></select>
+                </td>
+                <td>
+                  <a href="#" id="editticketholder">Edit</button>
+                </td>
+                <td>
+                  <a href="#" id="newticketholder">Add new</a>
                 </td>
               </tr>
             </table>
@@ -37,8 +68,8 @@
           <section id="trip">
             <table>
               <tr>
-                <th>From</th>
                 <td colspan="2">
+                  <label for="departureLocation">From</label>
                   <select id="departureLocation" name="from" onchange="loadDepartures()">
                     <option value="U">Uppsala</option>
                     <option value="Cst">Stockholm</option>
@@ -47,24 +78,28 @@
                 </td>
               </tr>
               <tr>
-                <th>To</th>
                 <td colspan="2">
+                  <label for="arrivalLocation">To</label>
                   <select id="arrivalLocation" name="to">
                     <option value="Cst">Stockholm</option>
                     <option value="Srv">Storvreta</option>
                 </td>
               </tr>
               <tr>
-                <th>Departure</th>
-                <td>
-                  <input id="departureDate" type="date" value="{{ today }}" onchange="loadDepartures()"/>
-                </td>
-                <td>
-                  <select id="departures" name="departure"></select>
+                <td colspan="2">
+                  <label for="departureDate">Departure</label>
+                  <div class="grid">
+                    <div>
+                      <input id="departureDate" type="date" value="{{ today }}" onchange="loadDepartures()"/>
+                    </div>
+                    <div>
+                      <select id="departures" name="departure"></select>
+                    </div>
+                  </div>
                 </td>
               </tr>
               <tr>
-                <td colspan="3"><input type="submit" value="Submit"/></td>
+                <td colspan="2"><input type="submit" value="Submit"/></td>
               </tr>
             </table>
             <div class="grid" style="text-align:center;">
@@ -76,7 +111,93 @@
     </main>
   </body>
   <script>
-    $(document).ready(loadDepartures)
+    $(document).ready(() => {
+      if ($.cookie("ticketholders") !== undefined) {
+        loadTicketHolders(JSON.parse(atob($.cookie("ticketholders"))))
+      }
+
+      loadDepartures()
+    })
+
+    $('#closemodal').click(() => {
+      $('#ticketholderdialog').removeAttr("open")
+    })
+
+    $('#newticketholder').click(() => {
+      $('#holderdialogmode').val("save")
+      $('#ticketholdertitle').text("Add ticket holder")
+      $('#firstname').val("")
+      $('#lastname').val("")
+      $('#ssn').val("")
+      $('#telno').val("")
+      $('#email').val("")
+      $('#submitholder').text("Add")
+
+      $('#ticketholderdialog')
+        .attr("open", "true")
+    })
+
+    $('#editticketholder').click(() => {
+      let ticketholder
+      let ticketholders = JSON.parse(atob($.cookie("ticketholders")))
+      for (th of ticketholders) {
+        if (th.firstName == $('#ticketholder').val()) {
+          ticketholder = th
+          break
+        }
+      }
+
+      $('#holderdialogmode').val("edit")
+      $('#ticketholdertitle').text("Edit ticket holder")
+      $('#firstname').val(ticketholder.firstName)
+      $('#lastname').val(ticketholder.lastName)
+      $('#ssn').val(ticketholder.identityNumber)
+      $('#telno').val(ticketholder.mobileNumber)
+      $('#email').val(ticketholder.email)
+      $('#submitholder').text("Save")
+
+      $('#ticketholderdialog')
+        .attr("open", "true")
+
+    })
+
+    $('#ticketholderform').submit(function(e) {
+      let ticketholders = []
+
+      if ($.cookie("ticketholders") !== undefined) {
+        ticketholders = JSON.parse(atob($.cookie("ticketholders")))
+      }
+
+      if ($('#holderdialogmode').val() == "edit") {
+        let ticketholder
+        for (i = 0; i < ticketholders.length; i++) {
+          if (ticketholders[i].firstName == $('#ticketholder').val()) {
+            ticketholders[i] = {
+              "firstName": $('#firstname').val(),
+              "lastName": $('#lastname').val(),
+              "identityNumber": $('#ssn').val(),
+              "mobileNumber": $('#telno').val(),
+              "email": $('#email').val()
+            }
+          }
+          break
+        }
+      } else {
+        ticketholders.push({
+          "firstName": $('#firstname').val(),
+          "lastName": $('#lastname').val(),
+          "identityNumber": $('#ssn').val(),
+          "mobileNumber": $('#telno').val(),
+          "email": $('#email').val()
+        })
+      }
+
+      $.cookie("ticketholders", btoa(JSON.stringify(ticketholders)))
+      loadTicketHolders(ticketholders)
+      $('#ticketholderdialog').removeAttr("open")
+
+      e.preventDefault()
+    })
 
     $('#paybackform').submit(function(e) {
       const data = $(this).serialize()
@@ -117,6 +238,17 @@
         }
       })
     })
+
+    function loadTicketHolders(arr) {
+      $('#ticketholder').html("")
+
+      $.each(arr, function(i, item) {
+        $('#ticketholder').append($('<option>', {
+          value: item.firstName,
+          text: item.firstName
+        }))
+      })
+    }
 
     function loadDepartures() {
       $.get({

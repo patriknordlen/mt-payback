@@ -51,7 +51,7 @@
               <tr>
                 <td>
                   <label for="ticketholder">Holder</label>
-                  <select id="ticketholder"></select>
+                  <select id="ticketholder" name="ticketholder"></select>
                 </td>
                 <td>
                   <a href="#" id="editticketholder">Edit</button>
@@ -138,14 +138,8 @@
     })
 
     $('#editticketholder').click(() => {
-      let ticketholder
       let ticketholders = JSON.parse(atob($.cookie("ticketholders")))
-      for (th of ticketholders) {
-        if (th.firstName == $('#ticketholder').val()) {
-          ticketholder = th
-          break
-        }
-      }
+      let ticketholder = ticketholders[$('#ticketholder').val()]
 
       $('#holderdialogmode').val("edit")
       $('#ticketholdertitle').text("Edit ticket holder")
@@ -162,34 +156,18 @@
     })
 
     $('#ticketholderform').submit(function(e) {
-      let ticketholders = []
+      let ticketholders = {}
 
       if ($.cookie("ticketholders") !== undefined) {
         ticketholders = JSON.parse(atob($.cookie("ticketholders")))
       }
 
-      if ($('#holderdialogmode').val() == "edit") {
-        let ticketholder
-        for (i = 0; i < ticketholders.length; i++) {
-          if (ticketholders[i].firstName == $('#ticketholder').val()) {
-            ticketholders[i] = {
-              "firstName": $('#firstname').val(),
-              "lastName": $('#lastname').val(),
-              "identityNumber": $('#ssn').val(),
-              "mobileNumber": $('#telno').val(),
-              "email": $('#email').val()
-            }
-          }
-          break
-        }
-      } else {
-        ticketholders.push({
-          "firstName": $('#firstname').val(),
-          "lastName": $('#lastname').val(),
-          "identityNumber": $('#ssn').val(),
-          "mobileNumber": $('#telno').val(),
-          "email": $('#email').val()
-        })
+      ticketholders[$('#firstname').val()] = {
+        "firstName": $('#firstname').val(),
+        "lastName": $('#lastname').val(),
+        "identityNumber": $('#ssn').val(),
+        "mobileNumber": $('#telno').val(),
+        "email": $('#email').val()
       }
 
       $.cookie("ticketholders", btoa(JSON.stringify(ticketholders)))
@@ -201,6 +179,7 @@
 
     $('#paybackform').submit(function(e) {
       const data = $(this).serialize()
+      console.log(data)
 
       $.post({
         url: "/api/submit",
@@ -239,13 +218,13 @@
       })
     })
 
-    function loadTicketHolders(arr) {
+    function loadTicketHolders(thObj) {
       $('#ticketholder').html("")
 
-      $.each(arr, function(i, item) {
+      $.each(Object.keys(thObj), (i, key) => {
         $('#ticketholder').append($('<option>', {
-          value: item.firstName,
-          text: item.firstName
+          value: thObj[key].firstName,
+          text: thObj[key].firstName
         }))
       })
     }

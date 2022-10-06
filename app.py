@@ -46,28 +46,18 @@ def submit():
         base64.b64decode(request.cookies.get("ticketholders")).decode("latin-1")
     )
 
-    print(
-        create_request_body(
+    r = requests.post(
+        "https://evf-regionsormland.preciocloudapp.net/api/Claims",
+        json=create_request_body(
             request.form.get("ticket"),
             request.form.get("from"),
             request.form.get("to"),
             request.form.get("departure"),
-            ticketholders[request.form.get("ticketholder")],
-        )
+            request.form.get("ticketholder"),
+        ),
     )
 
-    # r = requests.post(
-    #     "https://evf-regionsormland.preciocloudapp.net/api/Claims",
-    #     json=create_request_body(
-    #         request.form.get("ticket"),
-    #         request.form.get("from"),
-    #         request.form.get("to"),
-    #         request.form.get("departure"),
-    #         request.form.get("ticketholder"),
-    #     )
-    # )
-
-    if True:
+    if r:
         resp = make_response("Request submitted!")
         resp.set_cookie("ticketholder", request.form.get("ticketholder"))
         resp.set_cookie("expirydate", request.form.get("expirydate"))

@@ -21,7 +21,6 @@ def index():
         render_template(
             "main.html",
             today=datetime.date.today(),
-            persons=get_customers(request.cookies.get("ticketholders")),
             **request.cookies,
         )
     )

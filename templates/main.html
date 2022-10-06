@@ -40,7 +40,7 @@
       </dialog>
       <form id="paybackform" autocomplete="off">
         <details>
-          <summary>Ticket details</summary>
+          <summary id="ticketsummary">Ticket details</summary>
           <section id="ticket">
             <table>
               <tr>
@@ -110,7 +110,9 @@
   <script>
     $(document).ready(() => {
       if ($.cookie("ticketholders") !== undefined) {
-        loadTicketHolders(JSON.parse(atob($.cookie("ticketholders"))))
+        let ticketholders = JSON.parse(atob($.cookie("ticketholders")))
+        loadTicketHolders(ticketholders)
+        loadTicketData(ticketholders["{{ ticketholder }}"])
       }
 
       loadDepartures()
@@ -213,6 +215,10 @@
         }
       })
     })
+
+    function loadTicketData(th) {
+      $('#ticketsummary').text(`Ticket (${th.firstName} ${th.lastName}'s ticket expiring {{ expirydate }})`)
+    }
 
     function loadTicketHolders(thObj) {
       $('#ticketholder').html("")

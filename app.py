@@ -92,7 +92,6 @@ def get_arrival_stations(station):
 
 def get_customers(ticketholders):
     if ticketholders:
-        print(ticketholders)
         customers = json.loads(base64.b64decode(ticketholders).decode("latin-1"))
     else:
         customers = {}

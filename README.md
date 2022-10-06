@@ -7,7 +7,6 @@ When slowly exiting my WFH bubble after the main phase of the 2020+ pandemic, I 
 # Installing and running
 
 * Run `pip install -r requirements.txt`
-* Rename the "ticketholders.json.example" file to "ticketholders.json" and fill in your personal info in all fields marked with tags.
 * Run the app.py file
 * Visit http://localhost:5000
 

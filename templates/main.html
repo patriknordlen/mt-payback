@@ -60,7 +60,7 @@
       <form id="paybackform" autocomplete="off">
         <details>
           <summary id="ticketsummary">Ticket details</summary>
-          <section id="ticket">
+          <section id="ticketdetails">
             <table>
               <tr>
                 <td>
@@ -85,7 +85,6 @@
                     type="text"
                     id="ticket"
                     name="ticket"
-                    value="{{ ticket }}"
                   />
                 </td>
               </tr>
@@ -96,12 +95,19 @@
                     type="date"
                     id="expirydate"
                     name="expirydate"
-                    value="{{ expirydate }}"
                   />
                 </td>
               </tr>
+              <tr>
+                <td style="float: right;">
+                  <button id="saveticket">Save</button>
+                </td>
+              </tr>
             </table>
-          </section>
+            <div class="grid" style="text-align: center">
+              <div id="ticketforminfo"></div>
+            </div>
+        </section>
         </details>
         <details open>
           <summary>Trip details</summary>
@@ -162,11 +168,14 @@
   </body>
   <script>
     $(document).ready(() => {
-      if ($.cookie("ticketholders") !== undefined) {
-        let ticketholders = JSON.parse(atob($.cookie("ticketholders")));
+      if (localStorage.getItem("ticketholders")) {
+        let ticketholders = JSON.parse(localStorage.getItem("ticketholders"));
         loadTicketHolders(ticketholders);
-        loadTicketData(ticketholders["{{ ticketholder }}"]);
+        loadTicketData(ticketholders[localStorage.getItem("ticketholder")]);
       }
+
+      $("#expirydate").val(localStorage.getItem("expirydate"))
+      $("#ticket").val(localStorage.getItem("ticket"))
 
       loadDepartures();
     });
@@ -189,7 +198,7 @@
     });
 
     $("#editticketholder").click(() => {
-      let ticketholders = JSON.parse(atob($.cookie("ticketholders")));
+      let ticketholders = JSON.parse(localStorage.getItem("ticketholders"));
       let ticketholder = ticketholders[$("#ticketholder").val()];
 
       $("#holderdialogmode").val("edit");
@@ -204,11 +213,22 @@
       $("#ticketholderdialog").attr("open", "true");
     });
 
+    $("#saveticket").click(function (e) {
+      localStorage.setItem("ticketholder", $("#ticketholder").val())
+      localStorage.setItem("ticket", $("#ticket").val())
+      localStorage.setItem("expirydate", $("#expirydate").val())
+
+      $("#ticketforminfo").attr("style", "color:green")
+            .text("Details saved"),
+
+      e.preventDefault()
+    })
+
     $("#ticketholderform").submit(function (e) {
       let ticketholders = {};
 
-      if ($.cookie("ticketholders") !== undefined) {
-        ticketholders = JSON.parse(atob($.cookie("ticketholders")));
+      if (localStorage.getItem("ticketholders")) {
+        ticketholders = JSON.parse(localStorage.getItem("ticketholders"));
       }
 
       ticketholders[$("#firstname").val()] = {
@@ -219,7 +239,7 @@
         email: $("#email").val(),
       };
 
-      $.cookie("ticketholders", btoa(JSON.stringify(ticketholders)));
+      localStorage.setItem("ticketholders", JSON.stringify(ticketholders));
       loadTicketHolders(ticketholders);
       $("#ticketholderdialog").removeAttr("open");
 
@@ -269,7 +289,7 @@
 
     function loadTicketData(th) {
       $("#ticketsummary").text(
-        `Ticket (${th.firstName} ${th.lastName}'s ticket expiring {{ expirydate }})`
+        `Ticket (${th.firstName} ${th.lastName}'s ticket expiring ${localStorage.getItem("expirydate")})`
       );
     }
 

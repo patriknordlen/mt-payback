@@ -58,9 +58,6 @@ def submit():
 
     if r:
         resp = make_response("Request submitted!")
-        resp.set_cookie("ticketholder", request.form.get("ticketholder"))
-        resp.set_cookie("expirydate", request.form.get("expirydate"))
-        resp.set_cookie("ticket", request.form.get("ticket"))
 
         return resp
     else:
@@ -96,10 +93,6 @@ def get_customers(ticketholders):
         customers = {}
 
     return customers
-
-
-def get_customer_details(name):
-    return get_customers()[name]
 
 
 def create_request_body(ticket, dep_station, arr_station, departure, name):

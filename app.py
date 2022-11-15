@@ -39,6 +39,11 @@ def index():
     return resp
 
 
+@app.route("/static/<path:path>")
+def send_static_file(path):
+    return send_from_directory("static", path)
+
+
 @app.route("/api/submit", methods=["POST"])
 def submit():
     ticketholders = json.loads(

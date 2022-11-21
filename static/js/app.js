@@ -115,10 +115,10 @@ $("#paybackform").submit(function (e) {
   e.preventDefault();
 });
 
-$("#departureLocation").on("change", (event) => {
+$("#departureLocation").on("change", async (event) => {
   const departureStation = event.target.value;
 
-  $.get({
+  await $.get({
     url: `/api/arrival_stations/${departureStation}`,
     success: (response) => {
       $("#arrivalLocation").empty();
@@ -131,8 +131,14 @@ $("#departureLocation").on("change", (event) => {
         );
       });
     },
-  });
+  })
+
+  await loadDepartures()
 });
+
+$("#departureDate").on("change", loadDepartures)
+
+$("#arrivalLocation").on("change", loadDepartures)
 
 function loadTicketData(th) {
   $("#ticketsummary").text(
@@ -155,7 +161,7 @@ function loadTicketHolders(thObj) {
 
 function loadDepartures() {
   $.get({
-    url: `/api/departures/${$("#departureLocation").val()}/${$(
+    url: `/api/departures/${$("#departureLocation").val()}/${$("#arrivalLocation").val()}/${$(
       "#departureDate"
     ).val()}`,
     dataType: "json",

@@ -66,11 +66,11 @@ def submit():
         return f"Something went wrong submitting the request: {r.text}", 500
 
 
-@app.route("/api/departures/<station>/<date>", methods=["GET"])
-def get_departures(station, date):
+@app.route("/api/departures/<departure_station>/<arrival_station>/<date>", methods=["GET"])
+def get_departures(departure_station, arrival_station, date):
     r = requests.get(
         "https://evf-regionsormland.preciocloudapp.net/api/TrainStations/GetDepartureTimeList",
-        params={"stationId": station, "departureDate": date},
+        params={"departureStationId": departure_station, "arrivalStationId": arrival_station, "departureDate": date},
     )
 
     return r.text

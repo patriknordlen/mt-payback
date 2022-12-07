@@ -167,7 +167,7 @@ function loadDepartures() {
     dataType: "json",
     success: (response) => {
       $("#departures").empty();
-      $.each(response.data, (i, val) => {
+      $.each(response, (i, val) => {
         $("#departures").append(
           $("<option>", {
             value: getFakeISOString(new Date(val)),

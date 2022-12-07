@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from flask import Flask, render_template, request, make_response, send_from_directory
+from flask import Flask, render_template, request, make_response, send_from_directory, jsonify
 import base64
 import datetime
 import requests
@@ -73,7 +73,7 @@ def get_departures(departure_station, arrival_station, date):
         params={"departureStationId": departure_station, "arrivalStationId": arrival_station, "departureDate": date},
     )
 
-    return r.text
+    return jsonify(sorted(r.json()["data"]))
 
 def get_train_number(departure_station, arrival_station, departure_time):
     r = requests.get(

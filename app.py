@@ -13,6 +13,8 @@ stations = {
     "U": {"name": "Uppsala", "id": "cf09cbb1-fd82-4b83-9c09-87bc8fc2f018"},
     "Cst": {"name": "Stockholm", "id": "f4d25596-a9f9-41a1-b200-713439d92fc4"},
     "Srv": {"name": "Storvreta", "id": "ddf64ca1-b3b3-4820-94fb-137f17fbefc3"},
+    "Fvk": {"name": "Furuvik", "id": "8751e52c-2214-4c1d-b64b-1d3eefc524b9"},
+    "Gä": {"name": "Gävle", "id": "c1ed2e95-5cc2-4e9d-a89b-fb27f01ad527"}
 }
 
 
@@ -87,7 +89,7 @@ def get_train_number(departure_station, arrival_station, departure_time):
 
 @app.route("/api/arrival_stations/<station>", methods=["GET"])
 def get_arrival_stations(station):
-    arrival_stations = {"U": ["Cst", "Srv"], "Cst": ["U"], "Srv": ["U"]}
+    arrival_stations = {"U": ["Cst", "Srv", "Fvk", "Gä"], "Cst": ["U"], "Srv": ["U", "Fvk", "Gä"]}
 
     return {
         "stations": [

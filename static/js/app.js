@@ -5,8 +5,8 @@ $(document).ready(() => {
     loadTicketData(ticketholders[localStorage.getItem("ticketholder")]);
   }
 
-  $("#expirydate").val(localStorage.getItem("expirydate"))
-  $("#ticket").val(localStorage.getItem("ticket"))
+  $("#expirydate").val(localStorage.getItem("expirydate"));
+  $("#ticket").val(localStorage.getItem("ticket"));
 
   loadDepartures();
 });
@@ -51,15 +51,13 @@ $("#editticketholder").click(() => {
 });
 
 $("#saveticket").click(function (e) {
-  localStorage.setItem("ticketholder", $("#ticketholder").val())
-  localStorage.setItem("ticket", $("#ticket").val())
-  localStorage.setItem("expirydate", $("#expirydate").val())
+  localStorage.setItem("ticketholder", $("#ticketholder").val());
+  localStorage.setItem("ticket", $("#ticket").val());
+  localStorage.setItem("expirydate", $("#expirydate").val());
 
-  $("#ticketforminfo").attr("style", "color:green")
-        .text("Details saved"),
-
-  e.preventDefault()
-})
+  $("#ticketforminfo").attr("style", "color:green").text("Details saved"),
+    e.preventDefault();
+});
 
 $("#ticketholderform").submit(function (e) {
   let ticketholders = {};
@@ -87,31 +85,41 @@ $("#ticketholderform").submit(function (e) {
 });
 
 $("#paybackform").submit(function (e) {
+  if (
+    localStorage.getItem("expirydate") >
+      new Date().toLocaleDateString("sv-SE") ||
+    confirm(
+      `The ticket expired on ${localStorage.getItem(
+        "expirydate"
+      )}! Do you want to submit anyway?`
+    )
+  ) {
+    jsonData = {};
+    const data = $(this).serializeArray();
+    jQuery.each(data, function () {
+      jsonData[this.name] = this.value || "";
+    });
 
-  jsonData = {}
-  const data = $(this).serializeArray()
-  jQuery.each(data, function() {
-    jsonData[this.name] = this.value || ''
-  })
-
-  jsonData["customer"] = JSON.parse(localStorage.getItem("ticketholders"))[localStorage.getItem("ticketholder")]
-  $.post({
-    url: "/api/submit",
-    contentType: "application/json",
-    data: JSON.stringify(jsonData),
-    beforeSend: () =>
-      $("#result")
-        .attr("style", "color:green")
-        .attr("aria-busy", "true")
-        .text(""),
-    success: (data) => $("#result").attr("aria-busy", "false").text(data),
-    error: () =>
-      $("#result")
-        .attr("aria-busy", "false")
-        .attr("style", "color:red")
-        .text("Request failed"),
-  });
-
+    jsonData["customer"] = JSON.parse(localStorage.getItem("ticketholders"))[
+      localStorage.getItem("ticketholder")
+    ];
+    $.post({
+      url: "/api/submit",
+      contentType: "application/json",
+      data: JSON.stringify(jsonData),
+      beforeSend: () =>
+        $("#result")
+          .attr("style", "color:green")
+          .attr("aria-busy", "true")
+          .text(""),
+      success: (data) => $("#result").attr("aria-busy", "false").text(data),
+      error: () =>
+        $("#result")
+          .attr("aria-busy", "false")
+          .attr("style", "color:red")
+          .text("Request failed"),
+    });
+  }
   e.preventDefault();
 });
 
@@ -131,19 +139,28 @@ $("#departureLocation").on("change", async (event) => {
         );
       });
     },
-  })
+  });
 
-  await loadDepartures()
+  await loadDepartures();
 });
 
-$("#departureDate").on("change", loadDepartures)
+$("#departureDate").on("change", loadDepartures);
 
-$("#arrivalLocation").on("change", loadDepartures)
+$("#arrivalLocation").on("change", loadDepartures);
 
 function loadTicketData(th) {
-  $("#ticketsummary").text(
-    `Ticket (${th.firstName} ${th.surName}'s ticket expiring ${localStorage.getItem("expirydate")})`
-  );
+  let expiryDate = localStorage.getItem("expirydate");
+
+  if (expiryDate < new Date().toLocaleDateString("sv-SE")) {
+    $("#ticketsummary").attr("style", "color:red");
+    $("#ticketsummary").text(
+      `Ticket (${th.firstName} ${th.surName}'s ticket - EXPIRED ${expiryDate})`
+    );
+  } else {
+    $("#ticketsummary").text(
+      `Ticket (${th.firstName} ${th.surName}'s ticket expiring ${expiryDate})`
+    );
+  }
 }
 
 function loadTicketHolders(thObj) {
@@ -161,9 +178,9 @@ function loadTicketHolders(thObj) {
 
 function loadDepartures() {
   $.get({
-    url: `/api/departures/${$("#departureLocation").val()}/${$("#arrivalLocation").val()}/${$(
-      "#departureDate"
-    ).val()}`,
+    url: `/api/departures/${$("#departureLocation").val()}/${$(
+      "#arrivalLocation"
+    ).val()}/${$("#departureDate").val()}`,
     dataType: "json",
     success: (response) => {
       $("#departures").empty();
@@ -184,19 +201,23 @@ function loadDepartures() {
 // Workaround for Mälartåg's horrible (non-)use of timezones - even though
 // the API is expecting ISO8601 formatted dates, times are expected to be local
 // rather than in Z timezone.
-function getFakeISOString(date)
-{
+function getFakeISOString(date) {
   let d = new Date(date),
-  month = "" + (d.getMonth() + 1),
-  day = "" + d.getDate(),
-  year = "" + d.getFullYear(),
-  hours = "" + d.getHours(),
-  minutes = "" + d.getMinutes(),
-  seconds = ""+ d.getSeconds();
+    month = "" + (d.getMonth() + 1),
+    day = "" + d.getDate(),
+    year = "" + d.getFullYear(),
+    hours = "" + d.getHours(),
+    minutes = "" + d.getMinutes(),
+    seconds = "" + d.getSeconds();
   month = month.length < 2 ? "0" + month : month;
-  day   = day.length < 2 ? "0" + day : day;
+  day = day.length < 2 ? "0" + day : day;
   hours = hours.length < 2 ? "0" + hours : hours;
-  minutes = minutes.length< 2 ? "0" + minutes : minutes;
-  seconds = seconds.length< 2 ? "0" + seconds : seconds;
-  return ( [year, month, day].join("-") + "T" + [hours,minutes,seconds].join(":") + ".000Z");
+  minutes = minutes.length < 2 ? "0" + minutes : minutes;
+  seconds = seconds.length < 2 ? "0" + seconds : seconds;
+  return (
+    [year, month, day].join("-") +
+    "T" +
+    [hours, minutes, seconds].join(":") +
+    ".000Z"
+  );
 }

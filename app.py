@@ -107,10 +107,17 @@ def get_arrival_stations(station):
         "Srv": ["U", "Fvk", "Gä"],
     }
 
+    station_names = {
+        "U": "Uppsala C",
+        "Cst": "Stockholm C",
+        "Srv": "Storvreta",
+        "Fvk": "Furuvik",
+        "Gä": "Gävle",
+    }
+
     return {
         "stations": [
-            {"name": x, "longname": stations[x]["name"]}
-            for x in arrival_stations[station]
+            {"name": x, "longname": station_names[x]} for x in arrival_stations[station]
         ]
     }
 

@@ -80,7 +80,6 @@ def get_departures(departure_station, arrival_station, date):
             "arrivalStationId": arrival_station,
             "departureDate": date,
         },
-        verify=False,
     )
 
     return jsonify(sorted(r.json()["data"]))

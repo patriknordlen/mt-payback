@@ -81,7 +81,6 @@ class SJ:
                 "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0"
             }
         )
-        self.session.verify = False
         self.stations = {
             "U": {"name": "Uppsala C", "id": "00005:074"},
             "Cst": {"name": "Stockholm Central", "id": "00001:074"},

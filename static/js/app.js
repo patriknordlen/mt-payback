@@ -187,7 +187,7 @@ function loadDepartures() {
       $.each(response, (i, val) => {
         $("#departures").append(
           $("<option>", {
-            value: getFakeISOString(new Date(val)),
+            value: val.split("T")[1],
             text: val.split("T")[1],
           })
         );
@@ -196,28 +196,4 @@ function loadDepartures() {
     },
     error: (e) => console.log(e),
   });
-}
-
-// Workaround for Mälartåg's horrible (non-)use of timezones - even though
-// the API is expecting ISO8601 formatted dates, times are expected to be local
-// rather than in Z timezone.
-function getFakeISOString(date) {
-  let d = new Date(date),
-    month = "" + (d.getMonth() + 1),
-    day = "" + d.getDate(),
-    year = "" + d.getFullYear(),
-    hours = "" + d.getHours(),
-    minutes = "" + d.getMinutes(),
-    seconds = "" + d.getSeconds();
-  month = month.length < 2 ? "0" + month : month;
-  day = day.length < 2 ? "0" + day : day;
-  hours = hours.length < 2 ? "0" + hours : hours;
-  minutes = minutes.length < 2 ? "0" + minutes : minutes;
-  seconds = seconds.length < 2 ? "0" + seconds : seconds;
-  return (
-    [year, month, day].join("-") +
-    "T" +
-    [hours, minutes, seconds].join(":") +
-    ".000Z"
-  );
 }

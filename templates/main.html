@@ -139,17 +139,27 @@
               </tr>
               <tr>
                 <td colspan="2">
+                  <label for="operator">Operator</label>
+                  <select id="operator" name="operator">
+                    <option value="mt">Mälartåg</option>
+                    <option value="sj">SJ</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">
                   <label for="departureDate">Departure</label>
                   <div class="grid">
                     <div>
                       <input
                         id="departureDate"
                         type="date"
+                        name="departureDate"
                         value="{{ today }}"
                       />
                     </div>
                     <div>
-                      <select id="departures" name="departure"></select>
+                      <select id="departures" name="departureTime"></select>
                     </div>
                   </div>
                 </td>

@@ -2,15 +2,8 @@
   <head>
     <title>Payback time!</title>
     <script src="/static/js/jquery.min.js"></script>
-    <script src="/static/js/jquery.cookie.min.js"></script>
-    <link
-      rel="stylesheet"
-      href="/static/css/pico.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="/static/css/font-awesome.min.css"
-    />
+    <link rel="stylesheet" href="/static/css/pico.min.css" />
+    <link rel="stylesheet" href="/static/css/font-awesome.min.css" />
   </head>
   <body>
     <main class="container" style="width: 40%">
@@ -59,6 +52,46 @@
           </form>
         </article>
       </dialog>
+      <dialog id="info">
+        <article>
+          <header>
+            <a href="#" id="closeinfo" class="close"></a>
+          </header>
+          <h4>What is this?</h4>
+          <p>
+            This a silly small webapp that tries to make it as easy as possible
+            to seek compensation when Mälartåg or SJ trains are delayed or
+            cancelled.
+          </p>
+          <p>
+            When slowly exiting my WFH bubble after the main phase of the 2020+
+            pandemic, I got fed up with how often trains were now cancelled or
+            delayed, but I never had the energy to actually fill in the form to
+            get my money back. In the time I spent on making this I could
+            probably have submitted 50+ requests manually, but hey that wouldn't
+            have been as fun, right?
+          </p>
+          <h4>I want to get in contact</h4>
+          <p>
+            If you have an issue or a feature request or want to get in
+            touch for any other reason, you're free to
+            <a href="mailto:patrik@nordlen.se">email me</a>, or if you have a
+            GitHub account, you can
+            <a href="https://github.com/patriknordlen/mt-payback/issues"
+              >open an issue in the mt-payback repository</a
+            >.
+          </p>
+        </article>
+      </dialog>
+      <section>
+        <hgroup>
+          <h1>mt-payback</h1>
+          <p>
+            Apply for delay compensation more easily
+            <sup><a href="#" id="openinfo">[info]</a></sup>
+          </p>
+        </hgroup>
+      </section>
       <form id="paybackform" autocomplete="off">
         <details>
           <summary id="ticketsummary">Ticket details</summary>
@@ -82,26 +115,18 @@
               </tr>
               <tr>
                 <td>
-                  <label for="ticket">Number</label
-                  ><input
-                    type="number"
-                    id="ticket"
-                    name="ticket"
-                  />
+                  <label for="ticket">Number (Mälartåg format)</label
+                  ><input type="number" id="ticket" name="ticket" />
                 </td>
               </tr>
               <tr>
                 <td>
                   <label for="expirydate">Expiry date</label
-                  ><input
-                    type="date"
-                    id="expirydate"
-                    name="expirydate"
-                  />
+                  ><input type="date" id="expirydate" name="expirydate" />
                 </td>
               </tr>
               <tr>
-                <td style="float: right;">
+                <td style="float: right">
                   <button id="saveticket">Save</button>
                 </td>
               </tr>
@@ -109,7 +134,7 @@
             <div class="grid" style="text-align: center">
               <div id="ticketforminfo"></div>
             </div>
-        </section>
+          </section>
         </details>
         <details open>
           <summary>Trip details</summary>
@@ -118,10 +143,7 @@
               <tr>
                 <td colspan="2">
                   <label for="departureLocation">From</label>
-                  <select
-                    id="departureLocation"
-                    name="from"
-                  >
+                  <select id="departureLocation" name="from">
                     <option value="U">Uppsala</option>
                     <option value="Cst">Stockholm</option>
                     <option value="Srv">Storvreta</option>

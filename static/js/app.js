@@ -31,6 +31,14 @@ $("#newticketholder").click(() => {
   $("#ticketholderdialog").attr("open", "true");
 });
 
+$("#openinfo").click(() => {
+  $("#info").attr("open", "true");
+});
+
+$("#closeinfo").click(() => {
+  $("#info").removeAttr("open");
+});
+
 $("#editticketholder").click(() => {
   let ticketholders = JSON.parse(localStorage.getItem("ticketholders"));
   let ticketholder = ticketholders[$("#ticketholder").val()];

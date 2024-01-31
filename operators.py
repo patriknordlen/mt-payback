@@ -13,6 +13,8 @@ class MT:
             "Srv": {"name": "Storvreta", "id": "ddf64ca1-b3b3-4820-94fb-137f17fbefc3"},
             "Fvk": {"name": "Furuvik", "id": "8751e52c-2214-4c1d-b64b-1d3eefc524b9"},
             "Gä": {"name": "Gävle", "id": "c1ed2e95-5cc2-4e9d-a89b-fb27f01ad527"},
+            "Kn": {"name": "Knivsta", "id": "18df975c-61be-4029-94cd-fc565b0da4d9"},
+            "Mr": {"name": "Märsta", "id": "57d62e84-ab78-437f-bd59-7e5839de3ce4"},
         }
 
     def submit(
@@ -84,6 +86,8 @@ class SJ:
         self.stations = {
             "U": {"name": "Uppsala C", "id": "00005:074"},
             "Cst": {"name": "Stockholm Central", "id": "00001:074"},
+            "Kn": {"name": "Knivsta", "id": "00559:074"},
+            "Mr": {"name": "Märsta", "id": "00027:074"},
         }
 
     def submit(

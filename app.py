@@ -101,8 +101,10 @@ def get_train_number(departure_station, arrival_station, departure_time):
 @app.route("/api/arrival_stations/<station>", methods=["GET"])
 def get_arrival_stations(station):
     arrival_stations = {
-        "U": ["Cst", "Srv", "Fvk", "Gä"],
-        "Cst": ["U"],
+        "U": ["Cst", "Srv", "Kn", "Mr", "Fvk", "Gä"],
+        "Kn": ["U", "Cst", "Mr"],
+        "Mr": ["U", "Cst", "Kn"],
+        "Cst": ["U", "Kn", "Mr"],
         "Srv": ["U", "Fvk", "Gä"],
     }
 
@@ -112,6 +114,8 @@ def get_arrival_stations(station):
         "Srv": "Storvreta",
         "Fvk": "Furuvik",
         "Gä": "Gävle",
+        "Kn": "Knivsta",
+        "Mr": "Märsta",
     }
 
     return {

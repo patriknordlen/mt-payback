@@ -80,7 +80,8 @@ class SJ:
         self.session = requests.Session()
         self.session.headers.update(
             {
-                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0"
+                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0",
+                "Ocp-Apim-Subscription-Key": "78e7aad0e7b042b685d70e0131d897ca"
             }
         )
         self.stations = {
@@ -93,7 +94,6 @@ class SJ:
     def submit(
         self, ticket, from_station, to_station, departure_date, departure_time, customer
     ):
-        self._get_initial_cookies()
         self._register_ticket(ticket)
         self._add_travel_details(
             from_station, to_station, departure_date, departure_time
@@ -103,16 +103,9 @@ class SJ:
 
         return self._confirm()
 
-    def _get_initial_cookies(self):
-        self.session.get("https://www.sj.se/ersattning-vid-forsening")
-        r = self.session.get("https://www.sj.se/cms/configuration")
-        self.session.cookies.update(
-            {x["name"]: x["token"] for x in r.json()["cookie"].values()}
-        )
-
     def _register_ticket(self, ticket):
         r = self.session.post(
-            "https://www.sj.se/v19/rest/compensation/delaycompensationtokens",
+            "https://prod-api.adp.sj.se/public/delay-compensation/v1/compensation/delaycompensationtokens",
             data=json.dumps(
                 {
                     "commuterCardType": "Movingo 30 dgr på SJ kort",
@@ -128,7 +121,7 @@ class SJ:
         self, from_station, to_station, departure_date, departure_time
     ):
         r = self.session.put(
-            f"https://www.sj.se/v19/rest/compensation/{self.token}/traveldetails",
+            f"https://prod-api.adp.sj.se/public/delay-compensation/v1/compensation/{self.token}/traveldetails",
             files={
                 "file": (
                     "data",
@@ -152,7 +145,7 @@ class SJ:
 
     def _add_traveller_details(self, customer):
         r = self.session.put(
-            f"https://www.sj.se/v19/rest/compensation/{self.token}/contactinformation",
+            f"https://prod-api.adp.sj.se/public/delay-compensation/v1/compensation/{self.token}/contactinformation",
             data=json.dumps(
                 {
                     "emailAddress": customer["email"],
@@ -171,7 +164,7 @@ class SJ:
 
     def _add_payout_details(self, ssn, mobileNumber):
         r = self.session.post(
-            "https://www.sj.se/v19/rest/compensation/bankaccountrecords",
+            "https://prod-api.adp.sj.se/public/delay-compensation/v1/compensation/bankaccountrecords",
             json={
                 "personalIdentityNumber": ssn,
                 "swishPhoneNumber": mobileNumber.replace("-", ""),
@@ -181,7 +174,7 @@ class SJ:
 
     def _confirm(self):
         r = self.session.post(
-            f"https://www.sj.se/v19/rest/compensation/{self.token}/confirmations",
+            f"https://prod-api.adp.sj.se/public/delay-compensation/v1/compensation/{self.token}/confirmations",
             json={"paynovaBarIds": {"ticketCompensation": self.bar_id}},
         )
         return r

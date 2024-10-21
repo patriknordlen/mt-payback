@@ -85,10 +85,10 @@ class SJ:
             }
         )
         self.stations = {
-            "U": {"name": "Uppsala C", "id": "00005:074"},
-            "Cst": {"name": "Stockholm Central", "id": "00001:074"},
-            "Kn": {"name": "Knivsta", "id": "00559:074"},
-            "Mr": {"name": "Märsta", "id": "00027:074"},
+            "U": {"name": "Uppsala C", "id": "740000005"},
+            "Cst": {"name": "Stockholm Central", "id": "740000001"},
+            "Kn": {"name": "Knivsta", "id": "740000559"},
+            "Mr": {"name": "Märsta", "id": "740000027"},
         }
 
     def submit(

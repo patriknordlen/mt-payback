@@ -116,7 +116,7 @@ def get_arrival_stations(station):
 
 
 def main():
-    app.run(debug=True)
+    app.run()
 
 
 if __name__ == "__main__":

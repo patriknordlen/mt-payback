@@ -8,6 +8,7 @@ from flask import (
     send_from_directory,
     jsonify,
 )
+from dateutil import parser
 import datetime
 import requests
 import operators
@@ -78,7 +79,9 @@ def get_departures(departure_station, arrival_station, date):
         params={
             "departureStationId": departure_station,
             "arrivalStationId": arrival_station,
-            "departureDate": date,
+            "departureDate": (parser.parse(date) - datetime.timedelta(days=7)).strftime(
+                "%Y-%m-%d"
+            ),
         },
     )
 

@@ -88,19 +88,6 @@ def get_departures(departure_station, arrival_station, date):
     return jsonify(sorted(r.json()["data"]))
 
 
-def get_train_number(departure_station, arrival_station, departure_time):
-    r = requests.get(
-        "https://evf-regionsormland.preciocloudapp.net/api/TrainStations/GetDistance",
-        params={
-            "departureStationId": departure_station,
-            "arrivalStationId": arrival_station,
-            "departureDate": departure_time,
-        },
-    )
-
-    return r.json()["data"]["trafikverketTrainId"]
-
-
 @app.route("/api/arrival_stations/<station>", methods=["GET"])
 def get_arrival_stations(station):
     arrival_stations = {

@@ -79,9 +79,10 @@ def get_departures(departure_station, arrival_station, date):
         params={
             "departureStationId": departure_station,
             "arrivalStationId": arrival_station,
-            "departureDate": (parser.parse(date) - datetime.timedelta(days=7)).strftime(
-                "%Y-%m-%d"
-            ),
+            # "departureDate": (parser.parse(date) - datetime.timedelta(days=7)).strftime(
+                # "%Y-%m-%d"
+            # ),
+            "departureDate": parser.parse(date).strftime("%Y-%m-%d"),
         },
     )
 
